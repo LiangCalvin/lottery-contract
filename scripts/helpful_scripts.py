@@ -1,4 +1,4 @@
-from brownie import accounts, network, config, MockV3Aggregator, Contract, LinkToken, VRFCoordinatorMock
+from brownie import accounts, network, config, MockV3Aggregator, Contract, LinkToken, VRFCoordinatorMock, interface
 from web3 import Web3
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
@@ -67,3 +67,20 @@ def deploy_mocks(decimals=DECIMALS, initial_value=INITIAL_VALUE):
     )
     print("Mocks Deployed!")
     
+def fund_with_link(contract_address, account=None, link_token=None, amount=Web3.toWei(0.1, "ether")):
+    """
+    This function will use the link token to fund a contract.
+    Args:
+        contract_address (string): The address of the contract to fund
+        account (Account): The account to use for funding
+        link_token (Contract): The link token contract
+        amount (int): The amount of LINK to fund the contract with
+    """
+    account = account if account else get_account()
+    link_token = link_token if link_token else get_contract("link_token")
+    # tx = link_token.transfer(contract_address, amount, {"from": account})
+    link_token_contract = interface.LinkTokenInterface(link_token.address)
+    tx = link_token_contract.transfer(contract_address, amount, {"from": account})
+    tx.wait(1)
+    print("Funded contract with LINK!")
+    return tx
