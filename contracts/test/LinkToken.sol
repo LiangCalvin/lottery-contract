@@ -5,7 +5,7 @@ import "@chainlink/contracts/src/v0.4/ERC677Token.sol";
 import {StandardToken as linkStandardToken} from "@chainlink/contracts/src/v0.4/vendor/StandardToken.sol";
 
 contract LinkToken is linkStandardToken, ERC677Token {
-    uint public constant totalSupply = 10 ** 27;
+    uint256 public constant totalSupply = 10 ** 27;
     string public constant name = "ChainLink Token";
     uint8 public constant decimals = 18;
     string public constant symbol = "LINK";
@@ -22,7 +22,7 @@ contract LinkToken is linkStandardToken, ERC677Token {
      */
     function transferAndCall(
         address _to,
-        uint _value,
+        uint256 _value,
         bytes _data
     ) public validRecipient(_to) returns (bool success) {
         return super.transferAndCall(_to, _value, _data);
@@ -35,7 +35,7 @@ contract LinkToken is linkStandardToken, ERC677Token {
      */
     function transfer(
         address _to,
-        uint _value
+        uint256 _value
     ) public validRecipient(_to) returns (bool success) {
         return super.transfer(_to, _value);
     }
