@@ -3,8 +3,6 @@ from web3 import Web3
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["development", "ganache-local"]
-DECIMALS = 8
-INITIAL_VALUE = 200000000000
 
 def get_account(index=None, id=None):
     if index:
@@ -41,6 +39,8 @@ def get_contract(contract_name):
         )
     return contract
 
+DECIMALS = 8
+INITIAL_VALUE = 200000000000
 
 def deploy_mocks(decimals=DECIMALS, initial_value=INITIAL_VALUE):
     account = get_account()
