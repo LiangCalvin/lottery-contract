@@ -38,11 +38,11 @@ def enter_lottery():
 def end_lottery():
     account = get_account()
     lottery = Lottery[-1]  # Get the most recently deployed Lottery contract
-    tx = fund_with_link(lottery.address, account)  # Ensure the contract is funded with LINK
+    tx = fund_with_link(lottery.address)  # Ensure the contract is funded with LINK
     tx.wait(1)
     end_tx = lottery.endLottery({"from": account})
     end_tx.wait(1)
-    time.sleep(60)  # Wait for the randomness to be processed
+    time.sleep(180)  # Wait for the randomness to be processed
     print("Lottery has ended!")
     print(f"Winner is: {lottery.recentWinner()}")
 
