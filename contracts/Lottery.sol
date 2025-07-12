@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.6 <0.9.0;
+pragma solidity ^0.6.6;
 
-import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
-import {SafeMathChainlink} from "@chainlink/contracts/src/v0.6/vendor/SafeMathChainlink.sol";
+// import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+// import {SafeMathChainlink} from "@chainlink/contracts/src/v0.6/vendor/SafeMathChainlink.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
+// import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
+import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
 
 contract Lottery is VRFConsumerBase, Ownable {
     address payable[] public players;
     address payable public recentWinner;
-    uint256 public usdEntryFee;
     uint256 public randomness;
-
+    uint256 public usdEntryFee;
     AggregatorV3Interface internal ethUsdPriceFeed;
     enum LOTTERY_STATE {
         OPEN,
@@ -20,15 +22,19 @@ contract Lottery is VRFConsumerBase, Ownable {
     }
     LOTTERY_STATE public lottery_state;
     uint256 public fee;
-    bytes32 public keyHash; // VRF key hash, used to get random number
+    bytes32 public keyhash;
+    // Events
     event RequestedRandomness(bytes32 requestId);
+    event LotteryStarted();
+    event LotteryEnded(bytes32 requestId);
+    event WinnerPicked(address winner, uint256 amount);
 
     constructor(
         address _priceFeedAddress,
         address _vrfCoordinator,
         address _link,
         uint256 _fee,
-        bytes32 _keyHash
+        bytes32 _keyhash
     ) public VRFConsumerBase(_vrfCoordinator, _link) {
         // $50 in wei
         usdEntryFee = 50 * (10 ** 18);
@@ -36,19 +42,19 @@ contract Lottery is VRFConsumerBase, Ownable {
         ethUsdPriceFeed = AggregatorV3Interface(_priceFeedAddress);
         lottery_state = LOTTERY_STATE.CLOSED;
         fee = _fee; // LINK fee for VRF
-        keyHash = _keyHash; // VRF key hash
+        keyhash = _keyhash; // VRF key hash
     }
 
     function enter() public payable {
         // $50 minimum
         require(lottery_state == LOTTERY_STATE.OPEN);
         require(msg.value >= getEntranceFee(), "Not enough ETH!");
-        players.push(msg.sender);
+        players.push(payable(msg.sender));
     }
     function getEntranceFee() public view returns (uint256) {
         (, int256 price, , , ) = ethUsdPriceFeed.latestRoundData();
-        uint256 adjustPrice = uint256(price) * 10 ** 10;
-        uint256 costToEnter = (usdEntryFee * 10 ** 18) / adjustPrice;
+        uint256 adjustedPrice = uint256(price) * 10 ** 10;
+        uint256 costToEnter = (usdEntryFee * 10 ** 18) / adjustedPrice;
         return costToEnter;
     }
     function startLottery() public onlyOwner {
@@ -57,12 +63,20 @@ contract Lottery is VRFConsumerBase, Ownable {
             "can't start new lootery yet"
         );
         lottery_state = LOTTERY_STATE.OPEN;
+        emit LotteryStarted();
     }
 
     function endLottery() public onlyOwner {
+        require(lottery_state == LOTTERY_STATE.OPEN, "Lottery not open");
+        require(players.length > 0, "No players in lottery");
+
+        // Check if contract has enough LINK
+        require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK tokens");
+
         lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
-        bytes32 requestId = requestRandomness(keyHash, fee);
+        bytes32 requestId = requestRandomness(keyhash, fee);
         emit RequestedRandomness(requestId);
+        emit LotteryEnded(requestId);
     }
 
     function fulfillRandomness(
