@@ -21,7 +21,7 @@ contract Lottery is VRFConsumerBase, Ownable {
     LOTTERY_STATE public lottery_state;
     uint256 public fee;
     bytes32 public keyHash; // VRF key hash, used to get random number
-    // 0 open, 1 close, 2 cal
+    event RequestedRandomness(bytes32 requestId);
 
     constructor(
         address _priceFeedAddress,
@@ -62,6 +62,7 @@ contract Lottery is VRFConsumerBase, Ownable {
     function endLottery() public {
         lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
         bytes32 requestId = requestRandomness(keyHash, fee);
+        emit RequestedRandomness(requestId);
     }
 
     function fulfillRandomness(
@@ -72,7 +73,7 @@ contract Lottery is VRFConsumerBase, Ownable {
             lottery_state == LOTTERY_STATE.CALCULATING_WINNER,
             "You aren't there yet!"
         );
-        require(randomness > 0, "random-not-found");
+        require(_randomness > 0, "random-not-found");
         uint256 indexOfWinner = randomness % players.length;
         // address payable recentWinner = players[indexOfWinner];
         recentWinner = players[indexOfWinner];
