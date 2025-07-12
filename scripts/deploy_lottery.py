@@ -17,6 +17,7 @@ def deploy_lottery():
         publish_source=config["networks"][network.show_active()].get("verify", False),
     )
     print("Deployed Lottery contract at address:", lottery.address)
+    return lottery
 
 def start_lottery():
     account = get_account()
@@ -28,7 +29,7 @@ def start_lottery():
 def enter_lottery():
     account = get_account()
     lottery = Lottery[-1]  # Get the most recently deployed Lottery contract
-    entrance_fee = lottery.getEntranceFee()
+    entrance_fee = lottery.getEntranceFee() + 100000000  # Adding a small buffer to ensure the transaction goes through
     print(f"Entrance fee is: {entrance_fee}")
     enter_tx = lottery.enter({"from": account, "value": entrance_fee})
     enter_tx.wait(1)
@@ -44,7 +45,19 @@ def end_lottery():
     time.sleep(60)  # Wait for the randomness to be processed
     print("Lottery has ended!")
     print(f"Winner is: {lottery.recentWinner()}")
-    print(f"Balance of winner: {lottery.recentWinner().balance()}")
+# def end_lottery():
+#     account = get_account()
+#     lottery = Lottery[-1]
+#     fee = lottery.fee()
+#     print(f"Funding contract with {fee} LINK tokens")
+#     tx = fund_with_link(lottery.address, account, amount=fee)
+#     tx.wait(1)
+#     end_tx = lottery.endLottery({"from": account})
+#     end_tx.wait(1)
+#     time.sleep(60)
+#     print("Lottery has ended!")
+#     print(f"Winner is: {lottery.recentWinner()}")
+#     print(f"Balance of winner: {lottery.recentWinner().balance()}")
 
 def main():
     deploy_lottery()
