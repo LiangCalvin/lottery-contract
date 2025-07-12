@@ -26,14 +26,6 @@ contract_to_mock = {
 }
 
 def get_contract(contract_name):
-    """
-    This function will grab the contract addresses from the brownie config if defined,
-    otherwise, it will deploy a new one (a mock contract) and return that mock contract.
-    Args:
-        contract_name (string)
-    Returns:
-        brownie.network.contract.ProjectContract: The most recently deployed version of this contract.
-    """
     contract_type = contract_to_mock[contract_name]
     if network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
         if len(contract_type) <= 0:
@@ -67,7 +59,7 @@ def deploy_mocks(decimals=DECIMALS, initial_value=INITIAL_VALUE):
     )
     print("Mocks Deployed!")
     
-def fund_with_link(contract_address, account=None, link_token=None, amount=Web3.toWei(0.1, "ether")):
+def fund_with_link(contract_address, account=None, link_token=None, amount=2500000000000000000):
     account = account if account else get_account()
     link_token = link_token if link_token else get_contract("link_token")
     tx = link_token.transfer(contract_address, amount, {"from": account})
