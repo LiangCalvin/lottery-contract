@@ -11,9 +11,6 @@ def get_account(index=None, id=None):
         return accounts[index]
     if id:
         return accounts.load(id)
-    # accounts[0] is used for local development and testing ganache
-    # accounts.add(config["wallets"]["from_key"]) is used for mainnet and testnets
-    # accounts.load("id") is used for loading accounts from Brownie accounts file
     if (network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS 
     or network.show_active() in FORKED_LOCAL_ENVIRONMENTS): 
         return accounts[0]
@@ -59,7 +56,7 @@ def deploy_mocks(decimals=DECIMALS, initial_value=INITIAL_VALUE):
     )
     print("Mocks Deployed!")
     
-def fund_with_link(contract_address, account=None, link_token=None, amount=2500000000000000000):
+def fund_with_link(contract_address, account=None, link_token=None, amount=100000000000000000):
     account = account if account else get_account()
     link_token = link_token if link_token else get_contract("link_token")
     tx = link_token.transfer(contract_address, amount, {"from": account})
