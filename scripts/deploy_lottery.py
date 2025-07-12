@@ -45,19 +45,6 @@ def end_lottery():
     time.sleep(60)  # Wait for the randomness to be processed
     print("Lottery has ended!")
     print(f"Winner is: {lottery.recentWinner()}")
-# def end_lottery():
-#     account = get_account()
-#     lottery = Lottery[-1]
-#     fee = lottery.fee()
-#     print(f"Funding contract with {fee} LINK tokens")
-#     tx = fund_with_link(lottery.address, account, amount=fee)
-#     tx.wait(1)
-#     end_tx = lottery.endLottery({"from": account})
-#     end_tx.wait(1)
-#     time.sleep(60)
-#     print("Lottery has ended!")
-#     print(f"Winner is: {lottery.recentWinner()}")
-#     print(f"Balance of winner: {lottery.recentWinner().balance()}")
 
 def main():
     deploy_lottery()
