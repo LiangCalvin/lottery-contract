@@ -74,11 +74,9 @@ contract Lottery is VRFConsumerBase, Ownable {
             "You aren't there yet!"
         );
         require(_randomness > 0, "random-not-found");
-        uint256 indexOfWinner = randomness % players.length;
-        // address payable recentWinner = players[indexOfWinner];
+        uint256 indexOfWinner = _randomness % players.length;
         recentWinner = players[indexOfWinner];
         recentWinner.transfer(address(this).balance);
-        // reset the lottery
         players = new address payable[](0);
         lottery_state = LOTTERY_STATE.CLOSED;
         randomness = _randomness; // reset randomness
