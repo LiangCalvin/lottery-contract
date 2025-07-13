@@ -1,6 +1,6 @@
 import time
 from brownie import Lottery, accounts, config, network
-from scripts.helpful_scripts import get_account, get_contract, fund_with_link
+from scripts.helpful_scripts import get_account, get_contract, fund_with_link, LinkToken
 
 def deploy_lottery():
     account = get_account()
@@ -10,9 +10,6 @@ def deploy_lottery():
         get_contract("link_token").address,
         config["networks"][network.show_active()]["fee"],
         config["networks"][network.show_active()]["keyhash"],
-        # config["networks"][network.show_active()]["eth_usd_price_feed"],
-        # config["networks"][network.show_active()]["vrf_coordinator"],
-        # config["networks"][network.show_active()]["link_token"],
         {"from": account},
         publish_source=config["networks"][network.show_active()].get("verify", False),
     )
@@ -50,4 +47,13 @@ def main():
     deploy_lottery()
     start_lottery()
     enter_lottery()
-    end_lottery()
+    # end_lottery()
+    print("Ending lottery...")
+    end_tx = end_lottery()
+    
+    if end_tx:
+        print("Waiting for VRF response...")
+        # Note: You'll need to wait for the VRF callback
+        # This might take a few minutes on testnets
+    else:
+        print("Failed to end lottery")

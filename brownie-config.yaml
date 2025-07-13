@@ -12,7 +12,6 @@ networks:
     development:
         keyhash: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c"
         fee: 100000000000000000
-
     sepolia:
         vrf_coordinator: "0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625"
         eth_usd_price_feed: "0x694AA1769357215DE4FAC081bf1f309aDC325306"
@@ -20,6 +19,12 @@ networks:
         keyhash: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c"
         fee: 100000000000000000
         verify: True
+    mumbai:
+        vrf_coordinator: "0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed"
+        link_token: "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"
+        eth_usd_price_feed: "0x0715A7794a1dc8e42615F059dD6e406A6594651A"
+        fee: 100000000000000000
+        keyhash: "0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f"
     mainnet-fork:
         eth_usd_price_feed: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"
         verify: False
